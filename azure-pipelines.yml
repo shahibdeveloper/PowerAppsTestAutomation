@@ -1,6 +1,15 @@
 trigger:
 - master
 
+schedules:
+- cron: "0 0 * * *"
+  displayName: "Daily midnight test run"
+  branches:
+    include:
+    - main
+  always: true
+
+
 pool:
   vmImage: 'ubuntu-latest'
 
