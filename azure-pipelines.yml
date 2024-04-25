@@ -1,4 +1,18 @@
 # Starter pipeline
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your PowerShell commands here.
+      
+      
+      
+      # Set agent screen resolution to 1920x1080 to avoid sizing issues with Portal  
+      Set-DisplayResolution -Width 1920 -Height 1080 -Force
+      # Wait 10 seconds  
+      Start-Sleep -s 10
+      # Verify Screen Resolution is set to 1920x1080  
+      Get-DisplayResolution
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
