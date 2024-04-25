@@ -1,33 +1,58 @@
-# Starter pipeline
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+
+- task: VSTest@3
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\Microsoft.PowerApps.TestAutomation.Tests\bin\Debug\Microsoft.PowerApps.TestAutomation.Tests.dll'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    testFiltercriteria: 'TestCategory=PowerAppsTestAutomation'
+    uiTests: true
+    runSettingsFile: 'shahibdeveloper/PowerAppsTestAutomation/Microsoft.PowerApps.TestAutomation.Tests/patestautomation.runsettings'
+    overrideTestrunParameters: '-OnlineUsername "$(OnlineUsername)" -OnlinePassword "$(OnlinePassword)" -BrowserType "$(BrowserTypeChrome)" -OnlineUrl "$(OnlineUrl)" -UsePrivateMode "$(UsePrivateMode)" -TestAutomationURLFilePath "$(TestAutomationURLFilePath)" -DriversPath "$(ChromeWebDriver)" -LoginMethod "$(LoginMethod)"'
+    testRunTitle: 'Shahib-STG Run Power Apps Test Automation Tests via Chrome'
+
+- task: VSTest@3
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\Microsoft.PowerApps.TestAutomation.Tests\bin\Debug\Microsoft.PowerApps.TestAutomation.Tests.dll'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    testFiltercriteria: 'TestCategory=PowerAppsTestAutomation'
+    uiTests: true
+    runSettingsFile: 'shahibdeveloper/PowerAppsTestAutomation/Microsoft.PowerApps.TestAutomation.Tests/patestautomation.runsettings'
+    overrideTestrunParameters: '-OnlineUsername "$(OnlineUsername)" -OnlinePassword "$(OnlinePassword)" -BrowserType "$(BrowserTypeFirefox)" -OnlineUrl "$(OnlineUrl)" -UsePrivateMode "$(UsePrivateMode)" -TestAutomationURLFilePath "$(TestAutomationURLFilePath)" -DriversPath "$(GeckoWebDriver)" -LoginMethod "$(LoginMethod)"'
+    testRunTitle: 'Shahib-STG Run Power Apps Test Automation Tests via FIREFOX'
+
+- task: VSBuild@1
+  inputs:
+    solution: '**\*.sln'
+
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
     script: |
-      # Write your PowerShell commands here.
-      
-      
-      
       # Set agent screen resolution to 1920x1080 to avoid sizing issues with Portal  
       Set-DisplayResolution -Width 1920 -Height 1080 -Force
       # Wait 10 seconds  
       Start-Sleep -s 10
       # Verify Screen Resolution is set to 1920x1080  
       Get-DisplayResolution
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
 
-trigger:
-- master
-
-pool:
-  vmImage: ubuntu-latest
-
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+# The following script tasks seem to be examples or placeholders. If they're not part of your build or test process, you can remove them.
+# - script: echo Hello, world!
+#   displayName: 'Run a one-line script'
+#
+# - script: |
+#     echo Add other tasks to build, test, and deploy your project.
+#     echo See https://aka.ms/yaml
+#   displayName: 'Run a multi-line script'
