@@ -14,11 +14,52 @@ pool:
   vmImage: 'ubuntu-latest'
 
 
+steps:
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your PowerShell commands here.
+      # Set agent screen resolution to 1920x1080 to avoid sizing issues with Portal  
+      Set-DisplayResolution -Width 1920 -Height 1080 -Force
+      # Wait 10 seconds  
+      Start-Sleep -s 10
+      # Verify Screen Resolution is set to 1920x1080  
+      Get-DisplayResolution
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/PowerAppsTestAutomation.sln'
 
 
+- task: VSBuild@1
+  inputs:
+    solution: '**\*.sln'
+    configuration: '**/PowerAppsTestAutomation.sln'
+
+- task: VSTest@3
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\Microsoft.PowerApps.TestAutomation.Tests\bin\Debug\Microsoft.PowerApps.TestAutomation.Tests.dll'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    testFiltercriteria: 'TestCategory=PowerAppsTestAutomation'
+    uiTests: true
+    runSettingsFile: 'PowerAppsTestAutomation /Microsoft.PowerApps.TestAutomation.Tests/ patestautomation.runsettings'
+    overrideTestrunParameters: '-OnlineUsername "$(OnlineUsername)" -OnlinePassword "$(OnlinePassword)" -BrowserType "$(BrowserTypeChrome)" -OnlineUrl "$(OnlineUrl)" -UsePrivateMode "$(UsePrivateMode)" -TestAutomationURLFilePath "$(TestAutomationURLFilePath)" -DriversPath "$(ChromeWebDriver)" -LoginMethod "$(LoginMethod)"'
+    testRunTitle: 'r Run Power Apps Test Automation Tests via Chrome'
 
 
-
+- task: VSTest@3
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\Microsoft.PowerApps.TestAutomation.Tests\bin\Debug\Microsoft.PowerApps.TestAutomation.Tests.dll'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    testFiltercriteria: 'TestCategory=PowerAppsTestAutomation'
+    uiTests: true
+    runSettingsFile: 'PowerAppsTestAutomation /Microsoft.PowerApps.TestAutomation.Tests/ patestautomation.runsettings'
+    overrideTestrunParameters: '-OnlineUsername "$(OnlineUsername)" -OnlinePassword "$(OnlinePassword)" -BrowserType "$(BrowserTypeFirefox)" -OnlineUrl "$(OnlineUrl)" -UsePrivateMode "$(UsePrivateMode)" -TestAutomationURLFilePath "$(TestAutomationURLFilePath)" -DriversPath "$(GeckoWebDriver)" -LoginMethod "$(LoginMethod)"'
+    testRunTitle: 'r Run Power Apps Test Automation Tests via Firefox'
 
 # The following script tasks seem to be examples or placeholders. If they're not part of your build or test process, you can remove them.
 # - script: echo Hello, world!
